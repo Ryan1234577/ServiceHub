@@ -1,11 +1,19 @@
-<!-- conectar o arquivo header.php -->
-<?php include 'includes/header.php'; 
-?>
-<!-- conectar o arquivo menu.php -->
-<?php include 'includes/menu.php'; 
-?>
-
+<?php
  
+require_once "config/conexao.php";
+ 
+$cmd = $pdo->prepare("SELECT * FROM servicos WHERE descontinuado=b'0'");
+$cmd->execute();
+$serv = $cmd->fetchAll(PDO::FETCH_ASSOC);
+
+$sql = "select nome from usuarios where tipo = 2 and ativo = 1 order by id asc limit 4";
+$cmd = $pdo->prepare($sql);
+$cmd ->execute();
+$clientes = $cmd->fetchAll(PDO::FETCH_ASSOC);
+ 
+include "includes/header.php";
+include "includes/menu.php                                                                                                                                                                                                                                                                                                                                                  ";
+?>
 <header class="container mt-4">
   <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner rounded shadow">
@@ -16,39 +24,40 @@
         <img src="assets/img/banner2.jpg" class="d-block w-100 banner-img" alt="Banner 2">
       </div>
       <div class="carousel-item">
-        <img src="assets/img/banner3.jpg" class="d-block w-100 banner-img" alt="Banner 3">
+        <img src="assets/img/banner1.jpg" class="d-block w-100 banner-img" alt="Banner 3">
       </div>
     </div>
-
+ 
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
       <span class="carousel-control-prev-icon"></span>
     </button>
-
+ 
     <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
       <span class="carousel-control-next-icon"></span>
     </button>
   </div>
 </header>
-
+ 
 <main class="container mt-5">
-
+ 
   <section id="servicos">
     <h2 class="text-center mb-4">Serviços Prestados</h2>
-
+ 
     <div class="row g-4">
-    
+    <<?php foreach ($serv as $servico): ?>
         <div class="col-md-3">
           <article class="card shadow h-100">
             <div class="card-body">
-              <h5>alterar</h5>
-              <p></p>
-              <p class="fw-bold text-success">R$ 350.00</p>
+              <h5><?= $servico['nome'] ?></h5>
+              <p><?= $servico['descricao'] ?></p>
+              <p class="fw-bold text-success">R$ <?= number_format($servico['preco'], 2, ',', '.') ?></p>
             </div>
           </article>
         </div>
+        <?php endforeach; ?>
     </div>
   </section>
-
+ 
   <section id="diferenciais" class="mt-5">
     <h2 class="text-center mb-4">Nossos Diferenciais</h2>
     <div class="row text-center">
@@ -66,7 +75,7 @@
       </div>
     </div>
   </section>
-
+ 
   <section id="testemunhos" class="mt-5">
     <h2 class="text-center mb-4">Testemunhos</h2>
     <div class="row">
@@ -90,21 +99,31 @@
       </div>
     </div>
   </section>
-
+ 
   <section id="clientes" class="mt-5">
     <h2 class="text-center mb-4">Principais Clientes</h2>
     <div class="row text-center">
-      <div class="col-md-3">Sublime Grace Personalizados</div>
-      <div class="col-md-3">Casa Dossica</div>
-      <div class="col-md-3">Tilsp Traduções e Interprtações</div>
-      <div class="col-md-3">Softkleen Informática</div>
+      <?php foreach($clientes as $cliente):?>
+      <div class="col-md-3"><?= $cliente['nome'] ?></div>
+      <?php endforeach;?>
     </div>
   </section>
-
+ 
   <div class="text-center mt-5">
     <a href="contratar.php" class="btn btn-lg btn-warning">Solicitar Serviço</a>
   </div>
-
+ 
+ <hr>
+  <section id="alunos" class="mt-5">
+    <h2 class="text-center mb-4">Novos Alunos Cadastrados</h2>
+    <div class="row text-center">
+      <?php foreach($alunos as $aluno):?>
+      <div class="col-md-3"><?= $aluno['nome'] ?></div>
+      <?php endforeach;?>
+    </div>
+  </section>
 </main>
-<?php include 'includes/footer.php'; 
+<?php
+include "includes/footer.php";
 ?>
+ 
