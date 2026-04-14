@@ -1,3 +1,13 @@
+<?php
+session_start();
+if(!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] !=1){
+  header("location: login.php");
+}
+include "includes/header.php";
+include "include/menu.php";
+?>
+
+
 <main class="container mt-5">
   <h2>Painel Administrativo</h2>
   <p>Bem-vindo, </p>

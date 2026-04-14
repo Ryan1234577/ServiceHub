@@ -1,3 +1,35 @@
+<?php
+session_start();
+require "class/Usuario.php";
+
+$user = new Usuario();
+//var_dump($Usuario::efetuarLogin('admin@servicehub.com', 'admin123'));
+$msg = "";
+if($_SERVER['REQUEST_METHOD']==="POST"){
+  $email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_EMAIL);
+  $senha = $_POST["senha"]?? null;
+  if(!$email || $senha){
+    $msg = "Preencha os dados corretamente";
+  }
+  $usuario = Usuario::efetuarLogin($email, $senha);
+  if(count($usuario)>0){
+    $_SESSION['usuario_id'] = $usuario['id'];
+    $_SESSION['nome'] = $usuario['nome'];
+    $_SESSION['tipo'] = $usuario['tipo'];
+
+    if($usuario['primeiro_login'] == 1){
+      header('location: primeiro_login.php');
+      exit;
+    }
+    if($usuario['tipo']==1){
+      header('location: admin_dashboard.php');
+    }
+    else{
+      header('location: cliente_dashboard.php');
+    }
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>

@@ -9,10 +9,11 @@ $descricao = $_POST ['txtdescricao'];
 $preco = $_POST ['txtpreco'];
  
 // ==== Inserindo Serviços ====
+$pdo->prepare();
 $sql = "insert servicos (nome, descricao, preco) values(:nome, :descricao, :preco)";
-$cmd = $pdo->prepare($sql);
+$cmd = obterPdo()->prepare($sql);
 $cmd->execute([':nome'=>$nome, ':descricao'=>$descricao, ':preco'=>$preco]);
-$id = $pdo->lastInsertId();     //Armazena o ID do serviço que acabou de ser inserido
+$id = obterPdo()->lastInsertId();     //Armazena o ID do serviço que acabou de ser inserido
  
 if(isset($id))/*SE valor associado em $ID?*/{
     echo "Serviço cadastrado com sucesso, com id ".$id;

@@ -1,13 +1,14 @@
 <?php
  
 require_once "config/conexao.php";
- 
-$cmd = $pdo->prepare("SELECT * FROM servicos WHERE descontinuado=b'0'");
+$pdo = obterPdo();
+
+$cmd = obterPdo()->prepare("SELECT * FROM servicos WHERE descontinuado=b'0'");
 $cmd->execute();
 $serv = $cmd->fetchAll(PDO::FETCH_ASSOC);
 
 $sql = "select nome from usuarios where tipo = 2 and ativo = 1 order by id asc limit 4";
-$cmd = $pdo->prepare($sql);
+$cmd = obterPdo()->prepare($sql);
 $cmd ->execute();
 $clientes = $cmd->fetchAll(PDO::FETCH_ASSOC);
  
@@ -118,7 +119,10 @@ include "includes/menu.php                                                      
     <h2 class="text-center mb-4">Novos Alunos Cadastrados</h2>
     <div class="row text-center">
       <?php foreach($alunos as $aluno):?>
-      <div class="col-md-3"><?= $aluno['nome'] ?></div>
+      <div class="col-md-3"><?= $aluno['id_aluno'] ?></div>
+      <div class="col-md-3"><?= $aluno['turma'] ?></div>
+      <div class="col-md-3"><?= $aluno['disciplina'] ?></div>
+      <div class="col-md-3"><?= $aluno['data_nascimento'] ?></div>
       <?php endforeach;?>
     </div>
   </section>
