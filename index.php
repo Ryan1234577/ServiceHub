@@ -1,64 +1,68 @@
-<?php
- 
+<?php 
 require_once "config/conexao.php";
 $pdo = obterPdo();
 
-$cmd = obterPdo()->prepare("SELECT * FROM servicos WHERE descontinuado=b'0'");
+$cmd = $pdo->prepare("SELECT * FROM servicos WHERE descontinuado=b'0'");
 $cmd->execute();
-$serv = $cmd->fetchAll(PDO::FETCH_ASSOC);
+$servicos = $cmd->fetchAll(PDO::FETCH_ASSOC);
 
-$sql = "select nome from usuarios where tipo = 2 and ativo = 1 order by id asc limit 4";
-$cmd = obterPdo()->prepare($sql);
-$cmd ->execute();
+$sql = "SELECT nome FROM usuarios where tipo = 2 and ativo = 1 order by id asc limit 4;";
+$cmd = $pdo->prepare($sql);
+$cmd->execute();
 $clientes = $cmd->fetchAll(PDO::FETCH_ASSOC);
- 
+
+
 include "includes/header.php";
-include "includes/menu.php                                                                                                                                                                                                                                                                                                                                                  ";
+include "includes/menu.php";
+
+
+
 ?>
+
 <header class="container mt-4">
   <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner rounded shadow">
       <div class="carousel-item active">
-        <img src="assets/img/banner1.jpg" class="d-block w-100 banner-img" alt="Banner 1">
+        <img src="assests/img/banner1.jpg" class="d-block w-100 banner-img" alt="Banner 1">
       </div>
       <div class="carousel-item">
-        <img src="assets/img/banner2.jpg" class="d-block w-100 banner-img" alt="Banner 2">
+        <img src="assests/img/banner2.jpg" class="d-block w-100 banner-img" alt="Banner 2">
       </div>
       <div class="carousel-item">
-        <img src="assets/img/banner1.jpg" class="d-block w-100 banner-img" alt="Banner 3">
+        <img src="assests/img/banner3.jpg" class="d-block w-100 banner-img" alt="Banner 3">
       </div>
     </div>
- 
+
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
       <span class="carousel-control-prev-icon"></span>
     </button>
- 
+
     <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
       <span class="carousel-control-next-icon"></span>
     </button>
   </div>
 </header>
- 
+
 <main class="container mt-5">
- 
+
   <section id="servicos">
     <h2 class="text-center mb-4">Serviços Prestados</h2>
- 
+
     <div class="row g-4">
-    <<?php foreach ($serv as $servico): ?>
+    <?php foreach($servicos as $servico):?>
         <div class="col-md-3">
           <article class="card shadow h-100">
             <div class="card-body">
               <h5><?= $servico['nome'] ?></h5>
               <p><?= $servico['descricao'] ?></p>
-              <p class="fw-bold text-success">R$ <?= number_format($servico['preco'], 2, ',', '.') ?></p>
+              <p class="fw-bold text-success">R$<?= number_format( $servico['preco'],2,',','.') ?></p>
             </div>
           </article>
         </div>
-        <?php endforeach; ?>
+      <?php endforeach;?>
     </div>
   </section>
- 
+
   <section id="diferenciais" class="mt-5">
     <h2 class="text-center mb-4">Nossos Diferenciais</h2>
     <div class="row text-center">
@@ -76,7 +80,7 @@ include "includes/menu.php                                                      
       </div>
     </div>
   </section>
- 
+
   <section id="testemunhos" class="mt-5">
     <h2 class="text-center mb-4">Testemunhos</h2>
     <div class="row">
@@ -100,34 +104,21 @@ include "includes/menu.php                                                      
       </div>
     </div>
   </section>
- 
-  <section id="clientes" class="mt-5">
+
+  <section id="clientes" class="mt-5 bg-light pb-5">
     <h2 class="text-center mb-4">Principais Clientes</h2>
-    <div class="row text-center">
+    <div class="row text-center ">
       <?php foreach($clientes as $cliente):?>
-      <div class="col-md-3"><?= $cliente['nome'] ?></div>
+        <div class="col-md-3"><?= $cliente['nome'] ?></div>
       <?php endforeach;?>
     </div>
   </section>
- 
+
   <div class="text-center mt-5">
     <a href="contratar.php" class="btn btn-lg btn-warning">Solicitar Serviço</a>
   </div>
- 
- <hr>
-  <section id="alunos" class="mt-5">
-    <h2 class="text-center mb-4">Novos Alunos Cadastrados</h2>
-    <div class="row text-center">
-      <?php foreach($alunos as $aluno):?>
-      <div class="col-md-3"><?= $aluno['id_aluno'] ?></div>
-      <div class="col-md-3"><?= $aluno['turma'] ?></div>
-      <div class="col-md-3"><?= $aluno['disciplina'] ?></div>
-      <div class="col-md-3"><?= $aluno['data_nascimento'] ?></div>
-      <?php endforeach;?>
-    </div>
-  </section>
+
 </main>
-<?php
+<?php 
 include "includes/footer.php";
 ?>
- 

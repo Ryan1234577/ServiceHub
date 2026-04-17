@@ -1,4 +1,7 @@
-
+<?php 
+include "includes/header.php";
+include "includes/menu.php";
+?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -50,3 +53,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<?php 
+include "includes/footer.php";
+?>
