@@ -31,6 +31,7 @@ $usuario = new usuario();
 //     echo "<hr>";
 //     echo "<pre>";
     $usuario->buscarPorId(30);
-    $usuario->Setsenha(password_hash("123456",  PASSWORD_DEFAULT));
+    $usuario->Setsenha(password_hash("123456dfjodjkf",  PASSWORD_DEFAULT));
+    echo "Senha atualizadaa com sucesso";
 
 ?>
