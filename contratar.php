@@ -1,15 +1,45 @@
-<!-- conectar o arquivo header.php -->
-<?php include 'includes/header.php'; 
-?>
-<!-- conectar o arquivo menu.php -->
-<?php include 'includes/menu.php'; 
+<?php
+include_once "class/Servico.php";
+
+
+include 'includes/header.php'; 
+
+if (!isset($_SESSION['csrf_token'])){
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+include 'includes/menu.php'; 
+$servicos = Servico::listarAtivos();
+
+//variável
+$sucesso = filter_input(INPUT_GET, "sucesso", FILTER_VALIDATE_INT);
+$erro = filter_input(INPUT_GET, "erro", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+
+
+
 ?>
 
 <main class="container mt-5">
   <h2 class="text-center mb-4">Contratar Serviço</h2>
+
+  <?php if($sucesso):?>
+    <div class="alert.alert-sucess.alert-dismissible fade show">
+      Solicitação enviada com sucesso! Em breve entraremos em contato.
+      <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <?php endif;?>
+
+  <?php if($erro):?>
+    <div class="alert.alert-sucess.alert-dismissible fade show">
+      <?= $erro ?>
+      <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <?php endif;?>
+
   <form action="processa_contrato.php" method="POST" class="bg-light p-4 shadow rounded">
 
-    <input type="hidden" name="csrf_token" value="">
+      <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>>
 
     <div class="row">
 
@@ -43,16 +73,21 @@
         <input type="date" name="data_preferida" class="form-control">
       </div>
 
+      
       <div class="col-md-6 mb-3">
         <label class="form-label">Serviço</label>
-        <select name="servico_id" class="form-select" required>
-          <option value="">Selecione...</option>
-     
-            <option value="">
-           
+        <select name="servicos_ids[]" class="form-select" multiple required size=5>
+          <?php
+          foreach($servicos as $servico){
+          ?>
+            <option value="<?= $servico['id'] ?>">
+            <?= $servico['nome'] ?>
             </option>
-         
+         <?php }?>
         </select>
+        <small class="text-multed">
+          Para selecionar mais de um: pressione <strong>CTRL</strong> (Windows) ou <strong>CMD</strong> (MAC)
+        </small>
       </div>
 
       <div class="col-md-12 mb-3">
