@@ -1,5 +1,5 @@
 <?php
-
+//incluir conexão
 include_once "config/conexao.php";
  
 class Solicitacao
@@ -16,213 +16,177 @@ class Solicitacao
     private $endereco;
     private $pdo;
  
+    //contrutor
     public function __construct()
     {
-        $this->pdo = obterPdo(); 
+        $this->pdo = obterPdo();
     }
- 
+    //Getters e Setters
+    //ID
     public function getId()
     {
         return $this->id;
     }
- 
-    public function setId(int $id)
+    //Cliente
+    public function setClienteId(int $cliente_id)
     {
-        $this->id = $id;
+        return $this->cliente_id = $cliente_id;
     }
  
-    public function getCliente_Id()
+    //Descrição do Problema
+    public function setDescricaoProblema(string $descricao_problema)
     {
-        return $this->cliente_id;
+        return $this->descricao_problema = $descricao_problema;
     }
  
-    public function setCliente_Id(int $cliente_id)
-    {
-        $this->cliente_id = $cliente_id;
-    }
- 
-    public function getDescricao_Problema()
+    public function getDescricaoProblema()
     {
         return $this->descricao_problema;
     }
- 
-    public function setDescricao_Problema(string $descricao_problema)
+    //Data Preferida
+    public function setDataPreferida($data_preferida)
     {
-        $this->descricao_problema = $descricao_problema;
-    }   
- 
-    public function getData_Preferida()
+        return $this->data_preferida = $data_preferida;
+    }
+    public function getDataPreferida()
     {
         return $this->data_preferida;
     }
- 
-    public function setData_Preferida(string $data_preferida)
+    // endereco
+    public function setEndereco(string $endereco)
     {
-        $this->data_preferida = $data_preferida;
+        return $this->endereco = $endereco;
     }
- 
-    public function getStatus()
-    {
-        return $this->status;
-    }
- 
-    public function setStatus(string $status)
-    {
-        $this->status = $status;
-    }
- 
-    public function getData_Cad()
-    {
-        return $this->data_cad;
-    }
- 
-    public function setData_Cad(string $data_cad)
-    {
-        $this->data_cad = $data_cad;
-    }
- 
-    public function getData_Atualizacao()
-    {
-        return $this->data_atualizacao;
-    }
- 
-    public function setData_Atualizacao(string $data_atualizacao)
-    {
-        $this->data_atualizacao = $data_atualizacao;
-    }
- 
-    public function getData_Resposta()
-    {
-        return $this->data_resposta;
-    }
- 
-    public function setData_Resposta(string $data_resposta)
-    {
-        $this->data_resposta = $data_resposta;
-    }
- 
-    public function getResposta_Admin()
-    {
-        return $this->resposta_admin;
-    }
- 
-    public function setResposta_Admin(string $resposta_admin)
-    {
-        $this->resposta_admin = $resposta_admin;
-    }
- 
     public function getEndereco()
     {
         return $this->endereco;
     }
- 
-    public function setEndereco(string $endereco)
+    public function getStatus()
     {
-        $this->endereco = $endereco;
+        return $this->status;
     }
- 
-    // método inserir
+    public function getRespostaAdmin()
+    {
+        return $this->resposta_admin;
+    }
+    public function getDataCadastro()
+    {
+        return $this->data_cad;
+    }
+    //Métodos obrigatórios:
+    //Inserir
     public function inserir(): bool
     {
-        $sql = "INSERT INTO solicitacoes  
-        (cliente_id, descricao_problema, data_preferida, status, data_cad, data_atualizacao, data_resposta, resposta_admin, endereco) 
-        VALUES 
-        (:cliente_id, :descricao_problema, :data_preferida, :status, :data_cad, :data_atualizacao, :data_resposta, :resposta_admin, :endereco)";
-       
- 
+        $sql = "INSERT into solicitacoes (cliente_id, descricao_problema, data_preferida, status, endereco) values(:cliente_id, :descricao, :data_preferida, 1, :endereco)";
         $cmd = $this->pdo->prepare($sql);
         $cmd->bindValue(":cliente_id", $this->cliente_id, PDO::PARAM_INT);
-        $cmd->bindValue(":descricao_problema", $this->descricao_problema, PDO::PARAM_STR);
-        $cmd->bindValue(":data_preferida", $this->data_preferida, PDO::PARAM_STR);
-        $cmd->bindValue(":status", $this->status, PDO::PARAM_STR);
-        $cmd->bindValue(":data_cad", $this->data_cad, PDO::PARAM_STR);
-        $cmd->bindValue(":data_atualizacao", $this->data_atualizacao, PDO::PARAM_STR);
-        $cmd->bindValue(":data_resposta", $this->data_resposta, PDO::PARAM_STR);
-        $cmd->bindValue(":resposta_admin", $this->resposta_admin, PDO::PARAM_STR);
-        $cmd->bindValue(":endereco", $this->endereco, PDO::PARAM_STR);
- 
+        $cmd->bindValue(":descricao_problema", $this->descricao_problema);
+        $cmd->bindValue(":data_preferida", $this->data_preferida);
+        $cmd->bindValue(":endereco", $this->endereco);
         if ($cmd->execute()) {
-            $this->id = $this->pdo->lastInsertId();
+            $this->id = $this->pdo->lastInsertId();;
             return true;
         }
         return false;
     }
- 
-    // método listar
+    //Listar
     public static function listar(): array
     {
-        $cmd = obterPdo()->query("SELECT * FROM solicitacoes ORDER BY id");
+        $sql = "SELECT * FROM solicitacoes ORDER BY data_cad DESC";
+        $sql = "SELECT s.id, s.status, s.data_cad,
+            u.nome AS cliente_nome,
+            u.email AS cliente_email,
+            GROUP_CONCAT(se.nome SEPARATOR ', ') AS servicos
+        FROM solicitacoes s
+        INNER JOIN clientes c ON c.id = s.cliente_id
+        INNER JOIN usuarios u ON u.id = c.usuario_id
+        INNER JOIN servico_solicitacao ss ON ss.solicitacao_id = s.id
+        INNER JOIN servicos se ON se.id = ss.servico_id
+        GROUP BY s.id, s.status, s.data_cad, u.nome, u.email
+        ORDER BY s.data_cad DESC";
+ 
+        $cmd = obterPdo()->query($sql);
         return $cmd->fetchAll(PDO::FETCH_ASSOC);
     }
- 
-    // método listar por cliente
-    public static function listarPorCliente(int $cliente_id): array
+    public function listarServicosPorSolicitacao(int $solicitacao_id): array
     {
-        $sql = "SELECT * FROM solicitacoes WHERE cliente_id = :cliente_id ORDER BY id";
+        $sql = "SELECT s.nome, s.preco
+            FROM servico_solicitacao ss
+            JOIN servicos s ON ss.servico_id = s.id
+            WHERE ss.solicitacao_id = :solicitacao_id";
+ 
+        $cmd = $this->pdo->prepare($sql);
+        $cmd->bindValue(":solicitacao_id", $solicitacao_id, PDO::PARAM_INT);
+        $cmd->execute();
+ 
+        return $cmd->fetchAll(PDO::FETCH_ASSOC);
+    }
+    //Listar Por Cliente
+    public static function listarPorCliente(int $usuario_id): array
+    {
+        $sql = "SELECT s.* FROM solicitacoes s
+            JOIN clientes c ON s.cliente_id = c.id
+            WHERE c.usuario_id = :usuario_id";
+ 
         $cmd = obterPdo()->prepare($sql);
-        $cmd->bindValue(":cliente_id", $cliente_id, PDO::PARAM_INT);
+        $cmd->bindValue(":usuario_id", $usuario_id, PDO::PARAM_INT);
+ 
         $cmd->execute();
         return $cmd->fetchAll(PDO::FETCH_ASSOC);
     }
  
-    // método buscar por id
+    //Buscar Por Id
     public function buscarPorId(int $id): bool
     {
-        $sql = "SELECT * FROM solicitacoes WHERE id=:id";
+        $sql = "SELECT * FROM solicitacoes WHERE id = :id";
         $cmd = $this->pdo->prepare($sql);
         $cmd->bindValue(":id", $id, PDO::PARAM_INT);
         $cmd->execute();
+        $dados = $cmd->fetch(PDO::FETCH_ASSOC);
+        if ($dados) {
+            $this->id = $dados['id'];
+            $this->cliente_id = $dados['cliente_id'];
+            $this->descricao_problema = $dados['descricao_problema'];
  
-        if ($cmd->rowCount() > 0) {
-            $dados = $cmd->fetch(PDO::FETCH_ASSOC);
-            $this->setId($dados['id']);
-            $this->setCliente_Id($dados['cliente_id']);
-            $this->setDescricao_Problema($dados['descricao_problema']);
-            $this->setData_Preferida($dados['data_preferida']);
-            $this->setStatus($dados['status']);
-            $this->setData_Cad($dados['data_cad']);
-            $this->setData_Atualizacao($dados['data_atualizacao']);
-            $this->setData_Resposta($dados['data_resposta']);
-            $this->setResposta_Admin($dados['resposta_admin']);
-            $this->setEndereco($dados['endereco']);
+            $this->data_preferida = $dados['data_preferida'];
+            $this->status = $dados['status'];
+            $this->data_cad = $dados['data_cad'];
+            $this->data_atualizacao = $dados['data_atualizacao'];
+            $this->data_resposta = $dados['data_resposta'];
+            $this->resposta_admin = $dados['resposta_admin'];
+            $this->endereco = $dados['endereco'];
+ 
             return true;
         }
+ 
         return false;
     }
  
-    // método responder solicitação
-    public function responderSolicitacao(int $status, string $resposta_admin): bool
+    //Responder
+    public function responder(string $resposta, int $status): bool
     {
         if (!$this->id) return false;
  
-        $sql = "UPDATE solicitacoes 
-                SET status = :status, resposta_admin = :resposta_admin, data_resposta = NOW() 
-                WHERE id = :id";
-        
+        $sql = "UPDATE solicitacoes SET resposta_admin = :resposta, status = :status, data_resposta = NOW(), data_atualizacao = NOW() WHERE id = :id";
  
         $cmd = $this->pdo->prepare($sql);
-        $cmd->bindValue(":status", $status, PDO::PARAM_STR);
-        $cmd->bindValue(":resposta_admin", $resposta_admin, PDO::PARAM_STR);
+        $cmd->bindValue(":resposta", $resposta);
+        $cmd->bindValue(":status", $status, PDO::PARAM_INT);
         $cmd->bindValue(":id", $this->id, PDO::PARAM_INT);
  
         return $cmd->execute();
     }
  
-    // método atualizar status
+    //Atualizar Status
     public function atualizarStatus(int $status): bool
     {
         if (!$this->id) return false;
  
-        $sql = "UPDATE solicitacoes 
-                SET status = :status, data_atualizacao = NOW() 
-                WHERE id = :id";
- 
+        $sql = "UPDATE solicitacoes SET status = :status, data_atualizacao = NOW() WHERE id = :id";
         $cmd = $this->pdo->prepare($sql);
-        $cmd->bindValue(":status", $status, PDO::PARAM_STR);
+        $cmd->bindValue(":status", $status, PDO::PARAM_INT);
         $cmd->bindValue(":id", $this->id, PDO::PARAM_INT);
  
         return $cmd->execute();
-    }   
+    }
 }
- 
-?>" no final do arquivo PHP
